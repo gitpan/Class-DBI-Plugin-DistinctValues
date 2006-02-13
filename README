@@ -1,0 +1,27 @@
+NAME
+    Class::DBI::Plugin::DistinctValues - You can get unique values of a
+    column
+
+SYNOPSIS
+        package Music::CD;
+        use base qw/Class::DBI/;
+        use Class::DBI::Plugin::DistinctValues;
+        __PACKAGE__->columns(All => qw/id artist title year/);
+
+        package main;
+        use Music::CD;
+        my @artists = Music::CD->search_distinct_values('artist');
+
+DESCRIPTION
+    Class::DBI::Plugin::DistinctValues is plugin for CDBI. You can get
+    unique values of a column.
+
+AUTHOR
+    MATSUNO Tokuhiro <tokuhiro at mobilefactory.jp>
+
+    This library is free software; you can redistribute it and/or modify it
+    under the same terms as Perl itself.
+
+SEE ALSO
+    Class::DBI
+
