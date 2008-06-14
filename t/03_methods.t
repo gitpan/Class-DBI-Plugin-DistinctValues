@@ -4,57 +4,47 @@ use Test::More;
 use Test::Exception;
 
 BEGIN {
-    eval "use DBD::SQLite";
-    plan $@ ? (skip_all => 'needs DBD::SQLite for testing') : (tests => 3);
+    eval "use Class::DBI::Test::SQLite; use DBD::SQLite;";
+    plan $@ ? (skip_all => 'needs Class::DBI::Test::SQLite, DBD::SQLite for testing') : (tests => 3);
 }
 
 {
     package Music::CD;
-    use base 'Class::DBI';
-    use File::Temp qw/tempfile/;
+    use base qw/Class::DBI::Test::SQLite/;
     use Class::DBI::Plugin::DistinctValues;
-
-    my (undef, $DB) = tempfile();
-    my @DSN = ("dbi:SQLite:dbname=$DB", '', '', { AutoCommit => 1 });
-
-    END { unlink $DB if -e $DB }
-
-    __PACKAGE__->set_db(Main => @DSN);
-    __PACKAGE__->table('cd');
+    __PACKAGE__->set_table('cd');
     __PACKAGE__->columns(All => qw/cdid artist title year/);
 
-    sub CONSTRUCT {
-        my $class = shift;
-        $class->db_Main->do(qq{
-            CREATE TABLE cd (
-                cdid int UNSIGNED auto_increment,
-                artist varchar(255),
-                title varchar(255),
-                year int,
-                PRIMARY KEY(cdid)
-            )
-        });
-        $class->insert({
-            artist => 'foo',
-            title  => 'bar',
-            year   => 2004,
-        });
-        $class->insert({
-            artist => 'fog',
-            title  => 'bag',
-            year   => 2005,
-        });
-        $class->insert({
-            artist => 'fog',
-            title  => 'egg',
-            year   => 2003,
-        });
+    sub create_sql {
+        q{
+            cdid int UNSIGNED auto_increment,
+            artist varchar(255),
+            title varchar(255),
+            year int,
+            PRIMARY KEY(cdid)
+        }
     }
 }
 
 {
     package main;
-    Music::CD->CONSTRUCT;
+
+    Music::CD->insert({
+        artist => 'foo',
+        title  => 'bar',
+        year   => 2004,
+    });
+    Music::CD->insert({
+        artist => 'fog',
+        title  => 'bag',
+        year   => 2005,
+    });
+    Music::CD->insert({
+        artist => 'fog',
+        title  => 'egg',
+        year   => 2003,
+    });
+
     is_deeply [Music::CD->search_distinct_values('artist')], [qw(foo fog)], 'search_distinct_values';
     dies_ok { Music::CD->search_distinct_values('invalid_column') } 'died at invalid column name';
 
