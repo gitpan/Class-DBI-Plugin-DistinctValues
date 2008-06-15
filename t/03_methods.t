@@ -45,7 +45,7 @@ BEGIN {
         year   => 2003,
     });
 
-    is_deeply [Music::CD->search_distinct_values('artist')], [qw(foo fog)], 'search_distinct_values';
+    is_deeply [sort Music::CD->search_distinct_values('artist')], [sort qw(foo fog)], 'search_distinct_values';
     dies_ok { Music::CD->search_distinct_values('invalid_column') } 'died at invalid column name';
 
     my $cd = Music::CD->retrieve_all->first;
