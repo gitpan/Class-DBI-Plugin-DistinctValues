@@ -1,9 +1,10 @@
 package Class::DBI::Plugin::DistinctValues;
 use strict;
 use warnings;
-our $VERSION = '0.03';
+our $VERSION = '0.04';
 use base qw/Class::DBI::Plugin/;
 use Scalar::Util qw/blessed/;
+use 5.008001;
 
 sub init {
     my $class = shift;

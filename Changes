@@ -1,5 +1,9 @@
 Revision history for Perl extension Class::DBI::Plugin::DistinctValues
 
+0.04
+
+    - depend to 5.8.1
+
 0.03
 
     - test bug fixed
